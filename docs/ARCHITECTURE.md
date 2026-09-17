@@ -15,18 +15,9 @@ ZigBot follows these principles:
 
 `io.zigbot.core` defines framework-independent robotics concepts.
 
-### Subsystem
-
-A robot capability with an optional periodic update.
-
 ### Commands
 
-`io.zigbot.core.command` currently contains:
-
-- `Command`
-- `CommandScheduler`
-- `InstantCommand`
-- `RunCommand`
+`io.zigbot.core.command` contains the command model, scheduler, instant/continuous commands, timed commands, and sequential groups.
 
 Commands declare subsystem requirements. Scheduling a conflicting command interrupts the command that currently owns the same subsystem.
 
@@ -39,32 +30,42 @@ Current sinks:
 - `InMemoryTelemetry`
 - `ConsoleTelemetry`
 
+## Control
+
+`io.zigbot.control` contains feedback-control algorithms.
+
+Current controller:
+
+- `PidController`
+
+## Autonomous
+
+`io.zigbot.autonomous` contains route representations:
+
+- `Waypoint`
+- `Trajectory`
+
+The current trajectory model is intentionally data-oriented. Path following will be layered on top rather than coupled to the representation.
+
+## Field
+
+`io.zigbot.field` models the simulated environment.
+
+Current concepts:
+
+- rectangular field bounds;
+- axis-aligned obstacles;
+- point occupancy queries.
+
 ## Math
 
 `io.zigbot.math` contains framework-independent utilities such as angle normalization to the interval `[-π, π)`.
 
 ## Simulator
 
-`io.zigbot.simulator` provides:
-
-- immutable robot pose;
-- fixed-step simulation clock;
-- differential-drive kinematics;
-- wheel-distance tracking.
+`io.zigbot.simulator` provides immutable robot pose, fixed-step time, differential-drive kinematics, actuators, and virtual sensors.
 
 The differential-drive model uses exact constant-velocity arc integration for each simulation step.
-
-### Actuators
-
-`io.zigbot.simulator.actuator` contains the simulated motor abstraction with normalized output in `[-1, 1]`.
-
-### Sensors
-
-`io.zigbot.simulator.sensor` currently contains:
-
-- encoder;
-- gyroscope;
-- range sensor.
 
 ## Robot compositions
 
@@ -72,9 +73,11 @@ The differential-drive model uses exact constant-velocity arc integration for ea
 
 The first composition is `DifferentialDriveSubsystem`, which owns motors, encoders, gyroscope, drivetrain physics, and telemetry publication.
 
+`io.zigbot.robot.autonomous` contains executable autonomous compositions such as `SimpleAutonomousRoutine`.
+
 ## Execution model
 
-A simulation loop currently follows this order:
+A deterministic simulation loop follows this order:
 
 1. run scheduled commands;
 2. update subsystem physics with the fixed timestep;
@@ -82,16 +85,16 @@ A simulation loop currently follows this order:
 4. publish telemetry;
 5. advance the simulation clock.
 
-## Direction
+## Next direction
 
-Future layers will introduce:
+The technical foundation now supports a learning layer. The next milestone will add:
 
-- time-bounded and sequential commands;
-- autonomous trajectories;
-- PID control;
-- field and obstacle models;
-- visualization;
-- log persistence and analysis;
-- optional WPILib adapters.
+- structured lessons;
+- exercises;
+- challenges;
+- example solutions;
+- richer examples and interactive documentation.
+
+Later engineering milestones can add trajectory followers, visualization, persisted logs, cloud dashboards, and optional WPILib adapters.
 
 External integrations must not become dependencies of the core simulation model.
