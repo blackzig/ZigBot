@@ -1,9 +1,9 @@
 package io.zigbot.app;
 
 import io.zigbot.core.command.CommandScheduler;
-import io.zigbot.core.command.RunCommand;
 import io.zigbot.core.telemetry.InMemoryTelemetry;
 import io.zigbot.robot.DifferentialDriveSubsystem;
+import io.zigbot.robot.autonomous.SimpleAutonomousRoutine;
 import io.zigbot.simulator.RobotPose;
 import io.zigbot.simulator.SimulationClock;
 
@@ -24,25 +24,18 @@ public final class ZigBotApplication {
                 telemetry
         );
 
-        var driveCommand = new RunCommand(
-                () -> drive.setTankOutput(0.50, 0.65),
-                drive::stop,
-                drive
-        );
+        var autonomous = SimpleAutonomousRoutine.create(drive, clock);
+        scheduler.schedule(autonomous);
 
-        scheduler.schedule(driveCommand);
-
-        while (clock.timeSeconds() < 2.0) {
+        while (scheduler.isScheduled(autonomous) && clock.timeSeconds() < 5.0) {
             scheduler.run();
             drive.periodic(clock.timestepSeconds());
             clock.tick();
         }
 
-        scheduler.cancel(driveCommand);
-
         var pose = drive.pose();
         System.out.printf(
-                "ZigBot t=%.2f s -> x=%.2f m, y=%.2f m, heading=%.2f rad%n",
+                "Autonomous finished at t=%.2f s -> x=%.2f m, y=%.2f m, heading=%.2f rad%n",
                 clock.timeSeconds(),
                 pose.xMeters(),
                 pose.yMeters(),

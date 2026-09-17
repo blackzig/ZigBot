@@ -14,20 +14,25 @@ The project is intentionally independent. Public robotics projects such as WPILi
 
 - deterministic 2D simulation;
 - differential-drive kinematics;
-- simulated motors;
-- encoders, gyroscope, and range sensor;
+- simulated motors and sensors;
 - command/subsystem programming model;
 - command scheduler with requirement conflicts;
 - in-memory and console telemetry;
 - composed drivetrain subsystem;
+- PID control;
+- waypoints and trajectory representation;
+- field and obstacle modeling;
+- timed and sequential commands;
+- executable autonomous routine;
 - JUnit tests and GitHub Actions CI.
 
-## Example execution model
+## Autonomous example
 
 ```java
-scheduler.schedule(driveCommand);
+var autonomous = SimpleAutonomousRoutine.create(drive, clock);
+scheduler.schedule(autonomous);
 
-while (clock.timeSeconds() < 2.0) {
+while (scheduler.isScheduled(autonomous)) {
     scheduler.run();
     drive.periodic(clock.timestepSeconds());
     clock.tick();
@@ -56,12 +61,13 @@ gradle test
 - [Architecture](docs/ARCHITECTURE.md)
 - [Commands and Subsystems](docs/COMMANDS.md)
 - [Telemetry](docs/TELEMETRY.md)
+- [Autonomous Robotics](docs/AUTONOMOUS.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
 
 ## Roadmap
 
-The next major milestone is **v0.3 — Autonomous Robotics**, with waypoints, trajectories, PID control, autonomous routines, and a field model.
+The next major milestone is **v0.4 — Learning Experience**, turning the technical foundation into structured lessons, exercises, challenges, and example solutions.
 
 ## License
 
