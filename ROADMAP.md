@@ -8,18 +8,20 @@
 - [x] Executable example
 - [x] Initial unit tests
 - [ ] Gradle Wrapper
-- [ ] Continuous integration
-- [ ] Angle normalization
-- [ ] Better differential-drive integration
-- [ ] Simulation clock
+- [x] Continuous integration
+- [x] Angle normalization
+- [x] Better differential-drive integration
+- [x] Simulation clock
+- [x] Motor abstraction
+- [x] Simulated motor
 
 ## v0.2 — Robotics primitives
 
 - [ ] Command abstraction
 - [ ] Scheduler
 - [ ] Subsystems
-- [ ] Encoders
-- [ ] Gyroscope
+- [x] Encoder
+- [x] Gyroscope
 - [ ] Range sensor
 - [ ] Telemetry API
 
