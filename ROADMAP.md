@@ -17,13 +17,16 @@
 
 ## v0.2 — Robotics primitives
 
-- [ ] Command abstraction
-- [ ] Scheduler
-- [ ] Subsystems
+- [x] Command abstraction
+- [x] Scheduler
+- [x] Subsystems
 - [x] Encoder
 - [x] Gyroscope
-- [ ] Range sensor
-- [ ] Telemetry API
+- [x] Range sensor
+- [x] Telemetry API
+- [x] In-memory telemetry
+- [x] Drivetrain subsystem example
+- [x] Command conflict handling
 
 ## v0.3 — Autonomous robotics
 
@@ -32,6 +35,7 @@
 - [ ] PID controller
 - [ ] Autonomous routine examples
 - [ ] Field model
+- [ ] Time-bounded commands
 
 ## v0.4 — Learning experience
 

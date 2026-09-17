@@ -2,91 +2,96 @@
 
 ## Principles
 
-ZigBot follows these initial principles:
+ZigBot follows these principles:
 
 1. **Simulation first** — core concepts must work without physical hardware.
 2. **Deterministic behavior** — the same inputs and timestep should produce the same result.
 3. **Small domain objects** — simulation concepts should remain easy to understand and test.
 4. **Framework independence** — integrations with external robotics frameworks belong at the edges.
-5. **Testable physics** — motion and sensor behavior should be expressed as deterministic Java code.
+5. **Testable physics** — motion and sensor behavior should be deterministic Java code.
+6. **Composable behavior** — commands describe actions while subsystems describe robot capabilities.
 
-## Initial packages
+## Core
 
-### Application
+`io.zigbot.core` defines framework-independent robotics concepts.
 
-Runnable demonstrations and future CLI entry points.
+### Subsystem
 
-`io.zigbot.app`
+A robot capability with an optional periodic update.
 
-### Math
+### Commands
 
-Framework-independent utilities used by simulation models.
+`io.zigbot.core.command` currently contains:
 
-`io.zigbot.math`
+- `Command`
+- `CommandScheduler`
+- `InstantCommand`
+- `RunCommand`
 
-Current responsibility:
+Commands declare subsystem requirements. Scheduling a conflicting command interrupts the command that currently owns the same subsystem.
 
-- angle normalization to the interval `[-π, π)`.
+### Telemetry
 
-### Simulator
+`io.zigbot.core.telemetry` abstracts robot observations through `TelemetrySink`.
 
-Robot state and deterministic time.
+Current sinks:
 
-`io.zigbot.simulator`
+- `InMemoryTelemetry`
+- `ConsoleTelemetry`
 
-Current responsibilities:
+## Math
+
+`io.zigbot.math` contains framework-independent utilities such as angle normalization to the interval `[-π, π)`.
+
+## Simulator
+
+`io.zigbot.simulator` provides:
 
 - immutable robot pose;
 - fixed-step simulation clock;
 - differential-drive kinematics;
 - wheel-distance tracking.
 
-The differential-drive model uses exact constant-velocity arc integration for each simulation step instead of a simple forward-Euler position update.
+The differential-drive model uses exact constant-velocity arc integration for each simulation step.
 
 ### Actuators
 
-Hardware-independent simulated actuators.
-
-`io.zigbot.simulator.actuator`
-
-The first actuator model is a motor with normalized output in the range `[-1, 1]` and configurable maximum velocity.
+`io.zigbot.simulator.actuator` contains the simulated motor abstraction with normalized output in `[-1, 1]`.
 
 ### Sensors
 
-Virtual sensors that can be driven by simulation state.
-
-`io.zigbot.simulator.sensor`
-
-Current sensors:
+`io.zigbot.simulator.sensor` currently contains:
 
 - encoder;
-- gyroscope.
+- gyroscope;
+- range sensor.
+
+## Robot compositions
+
+`io.zigbot.robot` combines core abstractions and simulation components into understandable robot mechanisms.
+
+The first composition is `DifferentialDriveSubsystem`, which owns motors, encoders, gyroscope, drivetrain physics, and telemetry publication.
 
 ## Execution model
 
-A simulation loop should:
+A simulation loop currently follows this order:
 
-1. read actuator outputs;
-2. convert outputs into simulated velocities;
-3. advance physics using a fixed timestep;
-4. update virtual sensors from the new state;
-5. advance the simulation clock;
-6. publish telemetry.
-
-Keeping the timestep fixed makes examples, tests, and future autonomous behavior reproducible.
+1. run scheduled commands;
+2. update subsystem physics with the fixed timestep;
+3. update virtual sensors;
+4. publish telemetry;
+5. advance the simulation clock.
 
 ## Direction
 
 Future layers will introduce:
 
-- command abstraction and scheduler;
-- subsystem boundaries;
-- range and field sensors;
-- telemetry;
-- diagnostics;
-- autonomous routines;
+- time-bounded and sequential commands;
+- autonomous trajectories;
 - PID control;
+- field and obstacle models;
 - visualization;
+- log persistence and analysis;
 - optional WPILib adapters.
 
 External integrations must not become dependencies of the core simulation model.
