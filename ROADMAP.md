@@ -30,12 +30,14 @@
 
 ## v0.3 — Autonomous robotics
 
-- [ ] Waypoints
-- [ ] Trajectory representation
-- [ ] PID controller
-- [ ] Autonomous routine examples
-- [ ] Field model
-- [ ] Time-bounded commands
+- [x] Waypoints
+- [x] Trajectory representation
+- [x] PID controller
+- [x] Autonomous routine example
+- [x] Field model
+- [x] Obstacle model
+- [x] Time-bounded commands
+- [x] Sequential command groups
 
 ## v0.4 — Learning experience
 
