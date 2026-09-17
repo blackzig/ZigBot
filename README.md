@@ -10,53 +10,28 @@ ZigBot starts as a lightweight Java robotics simulator and evolves toward a comp
 
 The project is intentionally independent. Public robotics projects such as WPILib-based repositories may be studied as technical references, but ZigBot code is written specifically for this project.
 
-## Goals
+## What already works
 
-- Teach robotics concepts using Java.
-- Allow experiments without requiring physical robot hardware.
-- Keep the core small, understandable, and testable.
-- Introduce production-grade practices: architecture, automated tests, telemetry, diagnostics, and CI.
-- Provide a foundation for future integrations with robotics ecosystems.
-
-## Current milestone — v0.1
-
-The current foundation includes:
-
-- robot pose (x, y, heading);
-- deterministic fixed-step simulation clock;
-- differential-drive motion with arc integration;
+- deterministic 2D simulation;
+- differential-drive kinematics;
 - simulated motors;
-- virtual encoders and gyroscope;
-- angle normalization;
-- executable simulation example;
-- JUnit tests;
-- GitHub Actions CI;
-- documented architecture.
+- encoders, gyroscope, and range sensor;
+- command/subsystem programming model;
+- command scheduler with requirement conflicts;
+- in-memory and console telemetry;
+- composed drivetrain subsystem;
+- JUnit tests and GitHub Actions CI.
 
-## Planned modules
+## Example execution model
 
-```text
-ZigBot
-├── zigbot-core
-│   ├── commands
-│   ├── subsystems
-│   ├── telemetry
-│   └── diagnostics
-├── zigbot-simulator
-│   ├── drivetrain
-│   ├── sensors
-│   ├── field
-│   └── physics
-├── zigbot-examples
-│   ├── differential-drive
-│   ├── swerve-drive
-│   ├── shooter
-│   └── autonomous
-├── zigbot-learning
-│   ├── lessons
-│   ├── exercises
-│   └── challenges
-└── docs
+```java
+scheduler.schedule(driveCommand);
+
+while (clock.timeSeconds() < 2.0) {
+    scheduler.run();
+    drive.periodic(clock.timestepSeconds());
+    clock.tick();
+}
 ```
 
 ## Requirements
@@ -79,8 +54,14 @@ gradle test
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Commands and Subsystems](docs/COMMANDS.md)
+- [Telemetry](docs/TELEMETRY.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
+
+## Roadmap
+
+The next major milestone is **v0.3 — Autonomous Robotics**, with waypoints, trajectories, PID control, autonomous routines, and a field model.
 
 ## License
 
