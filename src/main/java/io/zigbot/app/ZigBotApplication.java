@@ -1,11 +1,11 @@
 package io.zigbot.app;
 
-import io.zigbot.simulator.DifferentialDriveSimulator;
+import io.zigbot.core.command.CommandScheduler;
+import io.zigbot.core.command.RunCommand;
+import io.zigbot.core.telemetry.InMemoryTelemetry;
+import io.zigbot.robot.DifferentialDriveSubsystem;
 import io.zigbot.simulator.RobotPose;
 import io.zigbot.simulator.SimulationClock;
-import io.zigbot.simulator.actuator.SimulatedMotor;
-import io.zigbot.simulator.sensor.SimulatedEncoder;
-import io.zigbot.simulator.sensor.SimulatedGyroscope;
 
 public final class ZigBotApplication {
 
@@ -14,45 +14,45 @@ public final class ZigBotApplication {
 
     public static void main(String[] args) {
         var clock = new SimulationClock(0.02);
-        var leftMotor = new SimulatedMotor(2.0);
-        var rightMotor = new SimulatedMotor(2.0);
-        var leftEncoder = new SimulatedEncoder();
-        var rightEncoder = new SimulatedEncoder();
-        var gyroscope = new SimulatedGyroscope();
+        var telemetry = new InMemoryTelemetry();
+        var scheduler = new CommandScheduler();
 
-        var simulator = new DifferentialDriveSimulator(
+        var drive = new DifferentialDriveSubsystem(
                 0.60,
-                new RobotPose(0.0, 0.0, 0.0)
+                2.0,
+                new RobotPose(0.0, 0.0, 0.0),
+                telemetry
         );
 
-        leftMotor.setOutput(0.50);
-        rightMotor.setOutput(0.65);
+        var driveCommand = new RunCommand(
+                () -> drive.setTankOutput(0.50, 0.65),
+                drive::stop,
+                drive
+        );
+
+        scheduler.schedule(driveCommand);
 
         while (clock.timeSeconds() < 2.0) {
-            double dt = clock.timestepSeconds();
-            double leftVelocity = leftMotor.velocity();
-            double rightVelocity = rightMotor.velocity();
-
-            RobotPose pose = simulator.step(leftVelocity, rightVelocity, dt);
-            leftEncoder.update(leftVelocity, dt);
-            rightEncoder.update(rightVelocity, dt);
-            gyroscope.setAngleRadians(pose.headingRadians());
-
+            scheduler.run();
+            drive.periodic(clock.timestepSeconds());
             clock.tick();
         }
 
-        var pose = simulator.pose();
+        scheduler.cancel(driveCommand);
+
+        var pose = drive.pose();
         System.out.printf(
                 "ZigBot t=%.2f s -> x=%.2f m, y=%.2f m, heading=%.2f rad%n",
                 clock.timeSeconds(),
                 pose.xMeters(),
                 pose.yMeters(),
-                gyroscope.angleRadians()
+                drive.headingRadians()
         );
         System.out.printf(
                 "Encoders -> left=%.2f m, right=%.2f m%n",
-                leftEncoder.positionMeters(),
-                rightEncoder.positionMeters()
+                drive.leftDistanceMeters(),
+                drive.rightDistanceMeters()
         );
+        System.out.printf("Telemetry keys -> %d%n", telemetry.snapshot().size());
     }
 }
