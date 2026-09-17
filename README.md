@@ -20,13 +20,17 @@ The project is intentionally independent. Public robotics projects such as WPILi
 
 ## Current milestone — v0.1
 
-The first milestone is a deterministic 2D robot simulator with:
+The current foundation includes:
 
 - robot pose (x, y, heading);
-- differential-drive motion;
-- fixed simulation timestep;
-- simple command loop;
-- unit tests;
+- deterministic fixed-step simulation clock;
+- differential-drive motion with arc integration;
+- simulated motors;
+- virtual encoders and gyroscope;
+- angle normalization;
+- executable simulation example;
+- JUnit tests;
+- GitHub Actions CI;
 - documented architecture.
 
 ## Planned modules
